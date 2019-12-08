@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package api;
+
+service User {
+  rpc GetUser(UserID) returns (Res);
+  rpc CreateUser(UserInfo) returns (Res);
+}
+
+message UserID {
+  string id = 1;
+}
+
+message UserInfo {
+  string _id = 1;
+  string firstName = 2;
+  string lastName = 3;
+}
+
+message Res {
+  bool success = 1;
+  string message = 2;
+  bytes data = 3;
+  uint32 count = 4;
+  string error = 5;
+  uint32 code = 6;
+}
