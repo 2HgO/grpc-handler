@@ -19,7 +19,7 @@ func RecoveryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryS
 	defer func() {
 		if erro := recover(); erro != nil {
 			res, err = nil, status.Errorf(codes.Internal, "%v", erro)
-			grpclog.SetLogger(log.New(os.Stdin, "[UserService::Error] ", 0))
+			grpclog.SetLogger(log.New(os.Stdout, "[UserService::Error] ", 0))
 			grpclog.Errorf("Error occured during RPC method=%s; Error=%v", info.FullMethod, erro)
 		}
 	}()
@@ -28,7 +28,7 @@ func RecoveryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryS
 
 	resp, erro := handler(ctx, req)
 
-	grpclog.SetLogger(log.New(os.Stdin, "[UserService::Log] ", 0))
+	grpclog.SetLogger(log.New(os.Stdout, "[UserService::Log] ", 0))
 	grpclog.Printf("Handled RPC method=%s; Duration=%s; Error=%v", info.FullMethod, time.Since(start), erro)
 	return resp, erro
 }
@@ -49,10 +49,10 @@ func ErrorHandler(err error) error {
 func Unmarshal(source, dest interface{}) error {
 	load, err := json.Marshal(source)
 	if err != nil {
-		return status.Error(codes.InvalidArgument, err.Error())
+		return status.Error(codes.Internal, err.Error())
 	}
 	if err := json.Unmarshal(load, dest); err != nil {
-		return status.Error(codes.Internal, err.Error())
+		return status.Error(codes.InvalidArgument, err.Error())
 	}
 	return nil
 }

@@ -124,10 +124,10 @@ func NewErr(code int, msg string, err *string) Error {
 func Unmarshal(source, dest interface{}) error {
 	load, err := json.Marshal(source)
 	if err != nil {
-		return status.Error(codes.InvalidArgument, err.Error())
+		return status.Error(codes.Internal, err.Error())
 	}
 	if err := json.Unmarshal(load, dest); err != nil {
-		return status.Error(codes.Internal, err.Error())
+		return status.Error(codes.InvalidArgument, err.Error())
 	}
 	return nil
 }
