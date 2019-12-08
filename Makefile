@@ -9,3 +9,4 @@ client:
 run: server client
 	service/server &
 	api/client &
+	echo "Server and Client started successfully, Listening at [::1]:55055"
