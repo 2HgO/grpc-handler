@@ -1,12 +1,12 @@
 package utils
 
 import (
-	"fmt"
-	"encoding/json"
 	pb "api/config/api"
-	"google.golang.org/grpc/status"
-	"google.golang.org/grpc/codes"
+	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"gopkg.in/go-playground/validator.v9"
 )
 
@@ -15,7 +15,7 @@ func ResponseData(model interface{}, res *pb.Res) (statusCode int, errMsg string
 	if res.Success {
 		err := json.Unmarshal(res.GetData(), model)
 		if err != nil {
-			statusCode, errMsg, errType  = ErrorHandler(err)
+			statusCode, errMsg, errType = ErrorHandler(err)
 			return
 		}
 	}
@@ -26,41 +26,41 @@ func ResponseData(model interface{}, res *pb.Res) (statusCode int, errMsg string
 func ResponsePayload(model interface{}, res *pb.Res, err error) (statusCode int, payload gin.H) {
 	var (
 		code int
-		msg string
+		msg  string
 		erro *string
 	)
 	switch {
-		case err != nil:
-			code, msg, erro = ErrorHandler(err)
-		case res.Success:
-			json.Unmarshal(res.GetData(), &model)
-			fallthrough
-		case !res.Success:
-			code, msg = int(res.GetCode()), res.GetMessage()
-			if res.GetError() != "" {
-				erro = new(string)
-				*erro = res.GetError()
-			}
+	case err != nil:
+		code, msg, erro = ErrorHandler(err)
+	case res.Success:
+		json.Unmarshal(res.GetData(), &model)
+		fallthrough
+	case !res.Success:
+		code, msg = int(res.GetCode()), res.GetMessage()
+		if res.GetError() != "" {
+			erro = new(string)
+			*erro = res.GetError()
+		}
 	}
 	return code, gin.H{"success": res.GetSuccess(), "message": msg, "data": model, "error": erro}
 }
 
 func handleStatusCode(code codes.Code) int {
 	switch code {
-		case codes.OK:
-			return 200
-		case codes.InvalidArgument:
-			return 400
-		case codes.NotFound:
-			return 404
-		case codes.Unauthenticated:
-			return 401
-		case codes.Unavailable:
-			return 503
-		case codes.Unknown, codes.Internal:
-			return 500
-		default:
-			return 500
+	case codes.OK:
+		return 200
+	case codes.InvalidArgument:
+		return 400
+	case codes.NotFound:
+		return 404
+	case codes.Unauthenticated:
+		return 401
+	case codes.Unavailable:
+		return 503
+	case codes.Unknown, codes.Internal:
+		return 500
+	default:
+		return 500
 	}
 }
 
@@ -77,19 +77,19 @@ func ErrorHandler(err error) (statusCode int, errorMsg string, _error *string) {
 		erro = new(string)
 	)
 	switch v := err.(type) {
-		case Error:
-			code, msg, erro = v.Code(), v.Error(), v.Type()
-		case validator.ValidationErrors:
-			msg = fmt.Sprint("Validation failed on field { ", v[0].Field(), " }, Condition: ", v[0].ActualTag())
-			if v[0].Param() != "" {
-				msg += fmt.Sprint(" { ", v[0].Param(), " }")
-			}
-			if v[0].Value() != nil {
-				msg += fmt.Sprint(", Value Recieved: ", v[0].Value())
-			}
-			code, *erro = 400, "Validation Error"
-		default:
-			code, msg, *erro = 500, v.Error(), "Validation Error"
+	case Error:
+		code, msg, erro = v.Code(), v.Error(), v.Type()
+	case validator.ValidationErrors:
+		msg = fmt.Sprint("Validation failed on field { ", v[0].Field(), " }, Condition: ", v[0].ActualTag())
+		if v[0].Param() != "" {
+			msg += fmt.Sprint(" { ", v[0].Param(), " }")
+		}
+		if v[0].Value() != nil {
+			msg += fmt.Sprint(", Value Recieved: ", v[0].Value())
+		}
+		code, *erro = 400, "Validation Error"
+	default:
+		code, msg, *erro = 500, v.Error(), "Validation Error"
 	}
 
 	return code, msg, erro
@@ -98,8 +98,8 @@ func ErrorHandler(err error) (statusCode int, errorMsg string, _error *string) {
 // Error is the default structure of an error
 type Error struct {
 	statusCode int
-	message   string
-	errType *string
+	message    string
+	errType    *string
 }
 
 // Code returns the error code associated with an error

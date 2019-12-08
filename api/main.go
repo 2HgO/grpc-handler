@@ -3,13 +3,17 @@ package main
 import (
 	"context"
 	"log"
+	"reflect"
+	"strings"
 
 	pb "api/config/api"
 	"api/models"
 	"api/utils"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"google.golang.org/grpc"
+	"gopkg.in/go-playground/validator.v9"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -24,7 +28,19 @@ func main() {
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(utils.PanicHandler())
-	
+
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		v.RegisterTagNameFunc(func(fld reflect.StructField) string {
+			var name string
+			if tag, ok := fld.Tag.Lookup("form"); ok {
+				name = strings.SplitN(tag, ",", 2)[0]
+			} else {
+				name = strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+			}
+			return name
+		})
+	}
+
 	r.POST("/", func(c *gin.Context) {
 		user := models.User{}
 
