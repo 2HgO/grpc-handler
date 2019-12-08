@@ -43,7 +43,6 @@ func main() {
 	
 	go func (){
 		if err := s.Serve(lis); err != nil {
-			log.Fatalln(err)
 			errChan <- err
 		}
 	}()
