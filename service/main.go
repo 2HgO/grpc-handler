@@ -20,8 +20,6 @@ func main() {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Fatalln(err)
-		} else {
-			log.Println("User Server shutting down...")
 		}
 	}()
 
@@ -46,10 +44,11 @@ func main() {
 			errChan <- err
 		}
 	}()
-	defer s.Stop()
+	defer s.GracefulStop()
 
 	select {
 		case <-channel:
+			log.Println("User Server shutting down...")
 			return
 		case err := <-errChan:
 			panic(err)
