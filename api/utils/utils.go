@@ -55,6 +55,8 @@ func handleStatusCode(code codes.Code) int {
 			return 404
 		case codes.Unauthenticated:
 			return 401
+		case codes.Unavailable:
+			return 503
 		case codes.Unknown, codes.Internal:
 			return 500
 		default:
